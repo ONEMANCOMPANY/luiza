@@ -1,0 +1,151 @@
+import traceback
+import sqlalchemy as db
+from datetime import datetime
+from fastapi import HTTPException
+from sqlalchemy import update
+from sqlalchemy.sql import func
+from sqlalchemy.orm import Query, relationship
+from sqlalchemy.ext.declarative import declarative_base
+from internal.database import PostgreSql, Base
+from internal.security import hash_password
+
+
+# Base = declarative_base()
+postgresql = PostgreSql(
+    user="postgres",
+    password="postgres",
+    host="localhost",
+    port=5432,
+    database="luiza"
+)
+session = postgresql.create_session()
+
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    user_id = db.Column(db.Integer, primary_key=True, index=True)
+    name = db.Column(db.String)
+    surname = db.Column(db.String)
+    phone = db.Column(db.String)
+    mail = db.Column(db.String)
+    cpf_cnpj = db.Column(db.String)
+    user_type = db.Column(db.String)
+    user_since = db.Column(db.DateTime, server_default=func.now())
+    password = db.Column(db.String)
+
+    # Relationship to the Post table
+    posts = relationship('EventModel', back_populates='users')
+
+    def create_user(user):
+        password = hash_password(user.password)
+        query = UserModel(
+            name=user.name, 
+            surname=user.surname,
+            phone=user.phone,
+            mail=user.mail,
+            cpf_cnpj=user.cpf_cnpj,
+            user_type=user.user_type,
+            user_since=user.user_since,
+            password=password.decode('utf8')
+        )
+        try:
+            session.add(query)
+            session.commit()
+            return query
+        except Exception as error:
+            print(error)
+            traceback.print_exc()
+        finally:
+            session.close()
+
+    def get_user(user):
+        query = session.query(
+            UserModel.user_id.label("user_id"),
+            UserModel.name.label("name"),
+            UserModel.surname.label("surname"),
+            UserModel.phone.label("phone"),
+            UserModel.mail.label("mail"),
+            UserModel.cpf_cnpj.label("cpf_cnpj"),
+            UserModel.user_type.label("user_type"),
+            UserModel.user_since.label("user_since")
+        )
+        if user:
+            query = query.filter(UserModel.user_id==user)
+        query = query.all()
+        try:
+            results = UserModel.dict_columns(query)
+            return results
+        except Exception as error:
+            print(error)
+            traceback.print_exc()
+        finally:
+            session.close()
+
+    def get_user_email(email: str):
+        query = session.query(
+            UserModel.user_id.label("user_id"),
+            UserModel.name.label("name"),
+            UserModel.surname.label("surname"),
+            UserModel.phone.label("phone"),
+            UserModel.mail.label("mail"),
+            UserModel.cpf_cnpj.label("cpf_cnpj"),
+            UserModel.user_type.label("user_type"),
+            UserModel.user_since.label("user_since")
+        ).filter(UserModel.mail==email)
+        query = query.all()
+        try:
+            results = UserModel.dict_columns(query)
+            return results
+        except Exception as error:
+            print(error)
+            traceback.print_exc()
+        finally:
+            session.close()
+
+    def get_password_email(email: str):
+        query = session.query(
+            UserModel.password.label("password"),
+            UserModel.mail.label("mail")
+        ).filter(UserModel.mail==email)
+        query = query.all()
+        try:
+            results = [passw for passw in query]
+            return results[0]
+        except Exception as error:
+            print(error)
+            traceback.print_exc()
+        finally:
+            session.close()
+
+    def change_password(user_id: str, new_password: str):
+        password = hash_password(new_password)
+
+        db_item = session.query(UserModel).filter(
+            UserModel.user_id == user_id
+        ).first()
+
+        print(f'DB ITEM::: {db_item}')
+
+        if db_item is None:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        # Update the fields you need
+        db_item.password = password.decode("utf8")
+
+        session.commit()
+        session.refresh(db_item)
+        session.close()       
+
+    def dict_columns(query) -> dict:
+        return [{
+            "user_id": data[0],
+            "name": data[1],
+            "surname": data[2],
+            "phone": '({}) {}-{}-{}'.format(data[3][0:2], data[3][2] ,data[3][3:7], data[3][7:]),
+            "mail": data[4],
+            "cpf_cnpj": data[5],
+            "user_type": data[6],
+            "user_since": data[7],
+        } for data in query] 
+
