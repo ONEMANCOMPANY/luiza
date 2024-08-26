@@ -19,7 +19,7 @@ class SubTypeModel(Base):
     type = db.Column(db.Integer, db.ForeignKey("user_types.type_id"), nullable=False)
     created_by = db.Column(db.DateTime, server_default=func.now())
 
-    def create_user_type(subtype):
+    def create_user_subtype(subtype):
         query = SubTypeModel(
             subtype_name=subtype.subtype_name,
             type=subtype.type
@@ -34,7 +34,7 @@ class SubTypeModel(Base):
         finally:
             session.close()
 
-    def get_type(subtype):
+    def get_subtype(subtype):
         query = session.query(
             SubTypeModel.subtype_id.label("subtype_id"),
             SubTypeModel.subtype_name.label("subtype_name"),
@@ -54,7 +54,7 @@ class SubTypeModel(Base):
 
     def dict_columns(query) -> dict:
         return [{
-            "subtype_id": data[0],
+            "susubbtype_id": data[0],
             "subtype_name": data[1],
             "type": data[2]
         } for data in query] 

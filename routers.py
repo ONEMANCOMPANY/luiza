@@ -4,6 +4,7 @@ from auth.resources import router as auth_router
 from plans.resources import router as plans_router
 from user_plan.resources import router as user_plan_router
 from user_types.resources import router as types
+from subtypes.resources import router as subtypes
 
 
 # routes
@@ -13,3 +14,4 @@ router.include_router(auth_router)
 router.include_router(plans_router)
 router.include_router(user_plan_router)
 router.include_router(types)
+router.include_router(subtypes)
