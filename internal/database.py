@@ -72,3 +72,14 @@ class PostgreSql:
             self.engine.dispose()
         except Exception as error:
             print(f"ERROR: funcion {PostgreSql.close_engine.__name__} -> error -> {str(error)}")
+
+
+# Base = declarative_base()
+postgresql = PostgreSql(
+    user="postgres",
+    password="postgres",
+    host="localhost",
+    port=5432,
+    database="luiza"
+)
+session = postgresql.create_session()

@@ -6,19 +6,9 @@ from sqlalchemy import update
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Query, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from internal.database import PostgreSql, Base
+from internal.database import PostgreSql, Base, session, postgresql
 from internal.security import hash_password
 
-
-# Base = declarative_base()
-postgresql = PostgreSql(
-    user="postgres",
-    password="postgres",
-    host="localhost",
-    port=5432,
-    database="luiza"
-)
-session = postgresql.create_session()
 
 
 class UserModel(Base):
