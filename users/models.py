@@ -20,12 +20,9 @@ class UserModel(Base):
     phone = db.Column(db.String)
     mail = db.Column(db.String)
     cpf_cnpj = db.Column(db.String)
-    user_type = db.Column(db.String)
+    user_type = db.Column(db.Integer, db.ForeignKey("user_types.type_id"), nullable=False)
     user_since = db.Column(db.DateTime, server_default=func.now())
     password = db.Column(db.String)
-
-    # Relationship to the Post table
-    posts = relationship('EventModel', back_populates='users')
 
     def create_user(user):
         password = hash_password(user.password)

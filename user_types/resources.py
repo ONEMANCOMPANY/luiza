@@ -1,12 +1,12 @@
 from fastapi import APIRouter, status, Depends
 from internal.dependencies import get_current_user
-from .models import UserPlanModel
-from .schemas import UserPlanInput, UserPlanOutput
+from .models import TypeModel
+from .schemas import TypeInput, TypeOutput
 
 
 router = APIRouter(
-    prefix="/user_plan",
-    tags=["user_plan"],
+    prefix="/type",
+    tags=["type"],
     responses={
         404: {
             "description": "Not found"
@@ -16,15 +16,15 @@ router = APIRouter(
 
 
 @router.post("/", dependencies=[Depends(get_current_user)])
-async def post(user: UserPlanInput):
-    return UserPlanModel.create_relation(user)
+async def post(user: TypeInput):
+    return TypeModel.create_user_type(user)
 
 
 @router.put("/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_user)])
-async def put(user: UserPlanInput):
+async def put(user: TypeInput):
     ...
 
 
 @router.get("/", dependencies=[Depends(get_current_user)])
 async def get(user_id: int = None):
-    return UserPlanModel.get_relation(user_id)
+    return TypeModel.get_type(user_id)
