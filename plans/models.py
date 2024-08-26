@@ -19,9 +19,10 @@ class PlanModel(Base):
     price = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=func.now())
 
+    user_plans = relationship("UserPlanModel", back_populates="plan")
+
     def create_plan(plan):
         query = PlanModel(
-            plan_id=plan.plan_id,
             plan_name=plan.plan_name,
             description=plan.description,
             price=plan.price

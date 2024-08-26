@@ -5,7 +5,7 @@ from typing import Union
 
 class SubTypeInput(BaseModel):
     subtype_name: str
-    type_id = int
+    type_id: int
 
     class Config:
         orm_mode = True
@@ -13,10 +13,10 @@ class SubTypeInput(BaseModel):
         arbitrary_types_allowed = True
 
 
-class TypeOutput(BaseModel):
+class SubTypeOutput(BaseModel):
     subtype_id: int
     subtype_name: str
-    type_id = int
+    type_id: int
 
     class Config:
         orm_mode = True

@@ -20,9 +20,10 @@ class UserModel(Base):
     phone = db.Column(db.String)
     mail = db.Column(db.String)
     cpf_cnpj = db.Column(db.String)
-    user_type = db.Column(db.Integer, db.ForeignKey("user_types.type_id"), nullable=False)
     user_since = db.Column(db.DateTime, server_default=func.now())
     password = db.Column(db.String)
+
+    user_plans = relationship("UserPlanModel", back_populates="user")
 
     def create_user(user):
         password = hash_password(user.password)
@@ -32,8 +33,6 @@ class UserModel(Base):
             phone=user.phone,
             mail=user.mail,
             cpf_cnpj=user.cpf_cnpj,
-            user_type=user.user_type,
-            user_since=user.user_since,
             password=password.decode('utf8')
         )
         try:
@@ -54,7 +53,6 @@ class UserModel(Base):
             UserModel.phone.label("phone"),
             UserModel.mail.label("mail"),
             UserModel.cpf_cnpj.label("cpf_cnpj"),
-            UserModel.user_type.label("user_type"),
             UserModel.user_since.label("user_since")
         )
         if user:
@@ -77,12 +75,12 @@ class UserModel(Base):
             UserModel.phone.label("phone"),
             UserModel.mail.label("mail"),
             UserModel.cpf_cnpj.label("cpf_cnpj"),
-            UserModel.user_type.label("user_type"),
             UserModel.user_since.label("user_since")
         ).filter(UserModel.mail==email)
         query = query.all()
         try:
             results = UserModel.dict_columns(query)
+            print(f'RESULTS::: {results}')
             return results
         except Exception as error:
             print(error)
@@ -132,7 +130,6 @@ class UserModel(Base):
             "phone": '({}) {}-{}-{}'.format(data[3][0:2], data[3][2] ,data[3][3:7], data[3][7:]),
             "mail": data[4],
             "cpf_cnpj": data[5],
-            "user_type": data[6],
-            "user_since": data[7],
+            "user_since": data[6],
         } for data in query] 
 

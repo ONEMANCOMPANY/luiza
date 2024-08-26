@@ -20,7 +20,7 @@ class UserPlanModel(Base):
 
     # Relacionamentos bidirecionais
     user = relationship("UserModel", back_populates="user_plans")
-    plan = relationship("PlanModel", back_populates="plan_users")
+    plan = relationship("PlanModel", back_populates="user_plans")
 
     def create_relation(relation):
         query = UserPlanModel(

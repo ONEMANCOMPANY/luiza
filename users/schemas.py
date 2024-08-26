@@ -9,8 +9,6 @@ class UserInput(BaseModel):
     phone: str
     mail: str
     cpf_cnpj: str
-    user_type: str
-    user_since: str
     password: str
 
     class Config:
@@ -24,7 +22,6 @@ class UserOutput(BaseModel):
     surname: str
     phone: str
     mail: str
-    user_type: str
     user_since: datetime.date
     password: str
 

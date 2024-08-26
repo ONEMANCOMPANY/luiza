@@ -18,6 +18,8 @@ class TypeModel(Base):
     type_name = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=func.now())
 
+    subtypes = relationship("SubTypeModel", back_populates="type")
+
     def create_user_type(type):
         query = TypeModel(
             type_name=type.type_name
