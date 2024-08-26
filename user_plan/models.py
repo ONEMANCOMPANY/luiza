@@ -16,7 +16,7 @@ class UserPlanModel(Base):
     id = db.Column(db.Integer, primary_key=True, index=True)
     plan_id = db.Column(db.Integer, db.ForeignKey("plans.plan_id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
-    created_by = db.Column(db.DateTime, server_default=func.now())
+    created_at = db.Column(db.DateTime, server_default=func.now())
 
     # Relacionamentos bidirecionais
     user = relationship("UserModel", back_populates="user_plans")

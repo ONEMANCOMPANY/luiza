@@ -17,7 +17,7 @@ class PlanModel(Base):
     plan_name = db.Column(db.String)
     description = db.Column(db.String)
     price = db.Column(db.String)
-    created_by = db.Column(db.DateTime, server_default=func.now())
+    created_at = db.Column(db.DateTime, server_default=func.now())
 
     def create_plan(plan):
         query = PlanModel(

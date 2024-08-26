@@ -6,23 +6,25 @@ from sqlalchemy import update
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Query, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from internal.database import PostgreSql, Base, session, postgresql
+from internal.database import PostgreSql, Base, session
 from internal.security import hash_password
 
 
+class UserTypeRelationModel(Base):
+    __tablename__ = "user_type_relation"
 
-class SubTypeModel(Base):
-    __tablename__ = "subtypes"
-
-    subtype_id = db.Column(db.Integer, primary_key=True, index=True)
-    subtype_name = db.Column(db.String)
-    type = db.Column(db.Integer, db.ForeignKey("user_types.type_id"), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    type_id = db.Column(db.Integer) #type or subtype id
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     created_at = db.Column(db.DateTime, server_default=func.now())
 
-    def create_user_subtype(subtype):
-        query = SubTypeModel(
-            subtype_name=subtype.subtype_name,
-            type=subtype.type
+    # Relacionamentos bidirecionais
+    user = relationship("UserModel", back_populates="user_plans")
+
+    def create_relation(relation):
+        query = UserTypeRelationModel(
+            type_id=relation.type_id,
+            user_id=relation.user_id
         )
         try:
             session.add(query)
@@ -34,17 +36,14 @@ class SubTypeModel(Base):
         finally:
             session.close()
 
-    def get_subtype(subtype):
+    def get_relation(plan):
         query = session.query(
-            SubTypeModel.subtype_id.label("subtype_id"),
-            SubTypeModel.subtype_name.label("subtype_name"),
-            SubTypeModel.type.label("type"),
+            UserTypeRelationModel.id.label("id"),
+            UserTypeRelationModel.type_id.label("type_id"),
+            UserTypeRelationModel.user_id.label("user_id")
         )
-        if subtype:
-            query = query.filter(SubTypeModel.subtype_id==subtype)
-        query = query.all()
         try:
-            results = SubTypeModel.dict_columns(query)
+            results = UserTypeRelationModel.dict_columns(query)
             return results
         except Exception as error:
             print(error)
@@ -54,8 +53,8 @@ class SubTypeModel(Base):
 
     def dict_columns(query) -> dict:
         return [{
-            "susubbtype_id": data[0],
-            "subtype_name": data[1],
-            "type": data[2]
+            "id": data[0],
+            "type_id": data[1],
+            "user_id": data[2]
         } for data in query] 
 

@@ -16,7 +16,7 @@ class TypeModel(Base):
 
     type_id = db.Column(db.Integer, primary_key=True, index=True)
     type_name = db.Column(db.String)
-    user_since = db.Column(db.DateTime, server_default=func.now())
+    created_at = db.Column(db.DateTime, server_default=func.now())
 
     def create_user_type(type):
         query = TypeModel(
