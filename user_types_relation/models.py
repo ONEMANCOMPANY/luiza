@@ -8,18 +8,21 @@ from sqlalchemy.orm import Query, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from internal.database import PostgreSql, Base, session
 from internal.security import hash_password
+from user_types.models import TypeModel
+from users.models import UserModel
 
 
 class UserTypeRelationModel(Base):
     __tablename__ = "user_type_relation"
 
     id = db.Column(db.Integer, primary_key=True, index=True)
-    type_id = db.Column(db.Integer) #type or subtype id
+    type_id = db.Column(db.Integer, db.ForeignKey("types.type_id"), nullable=False) #type or subtype id
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     created_at = db.Column(db.DateTime, server_default=func.now())
 
     # Relacionamentos bidirecionais
-    user = relationship("UserModel", back_populates="user_plans")
+    user = relationship("UserModel", back_populates="user_type")
+    type = relationship("TypeModel", back_populates="user_type")
 
     def create_relation(relation):
         query = UserTypeRelationModel(

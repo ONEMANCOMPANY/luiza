@@ -24,6 +24,8 @@ class UserModel(Base):
     password = db.Column(db.String)
 
     user_plans = relationship("UserPlanModel", back_populates="user")
+    user_type = relationship("UserTypeRelationModel", back_populates="user")
+
 
     def create_user(user):
         password = hash_password(user.password)

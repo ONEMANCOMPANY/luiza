@@ -5,8 +5,8 @@ from .schemas import UserTypeInput, UserTypeOutput
 
 
 router = APIRouter(
-    prefix="/type",
-    tags=["type"],
+    prefix="/user_type_relation",
+    tags=["user_type_relation"],
     responses={
         404: {
             "description": "Not found"
